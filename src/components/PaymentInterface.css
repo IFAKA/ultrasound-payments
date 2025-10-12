@@ -187,7 +187,7 @@
   }
 }
 
-/* Large screens (1200px and up) */
+/* Large screens (1200px and up) - Desktop layout */
 @media (min-width: 1200px) {
   .payment-interface {
     padding: 0.75rem 1rem;
@@ -215,6 +215,7 @@
   
   .payment-card {
     min-height: 300px;
+    max-height: 500px;
     padding: 1.25rem;
   }
   
@@ -244,7 +245,19 @@
   }
 }
 
-/* Medium screens (769px to 1199px) */
+/* Ultra large screens (1600px and up) - Prevent UI breaking on huge displays */
+@media (min-width: 1600px) {
+  .payment-interface {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .payment-card {
+    max-height: 450px;
+  }
+}
+
+/* Medium screens (769px to 1199px) - Tablet layout */
 @media (max-width: 1199px) and (min-width: 769px) {
   .payment-interface {
     padding: 0.5rem 1rem;
@@ -267,11 +280,13 @@
   }
   
   .payment-grid {
+    flex-direction: column;
     gap: 0.8rem;
   }
   
   .payment-card {
     min-height: 280px;
+    max-height: 400px;
     padding: 1rem;
   }
   

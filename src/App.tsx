@@ -89,7 +89,9 @@ function App() {
           {!isMobile && (
             <div className="sidebar-footer">
               <p>
-                Built with <a href="https://github.com/quiet/quiet-js" target="_blank" rel="noopener noreferrer">Quiet.js</a>
+                <a href="https://github.com/IFAKA/ultrasound-payments" target="_blank" rel="noopener noreferrer">
+                  🔗 View on GitHub
+                </a>
               </p>
             </div>
           )}
@@ -128,7 +130,9 @@ function App() {
         {isMobile && (
           <footer className="mobile-footer">
             <p>
-              Built with <a href="https://github.com/quiet/quiet-js" target="_blank" rel="noopener noreferrer">Quiet.js</a>
+              <a href="https://github.com/IFAKA/ultrasound-payments" target="_blank" rel="noopener noreferrer">
+                🔗 View on GitHub
+              </a>
             </p>
           </footer>
         )}
