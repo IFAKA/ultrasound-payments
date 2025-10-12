@@ -1,4 +1,49 @@
 /* PaymentInterface.css */
+
+/* Pulse glowing animation for transmitting cards */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 5px rgba(138, 180, 248, 0.3), 0 0 10px rgba(138, 180, 248, 0.2), 0 0 15px rgba(138, 180, 248, 0.1);
+    border-color: rgba(138, 180, 248, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(138, 180, 248, 0.6), 0 0 30px rgba(138, 180, 248, 0.4), 0 0 40px rgba(138, 180, 248, 0.2);
+    border-color: rgba(138, 180, 248, 1);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(138, 180, 248, 0.3), 0 0 10px rgba(138, 180, 248, 0.2), 0 0 15px rgba(138, 180, 248, 0.1);
+    border-color: rgba(138, 180, 248, 0.8);
+  }
+}
+
+@keyframes pulseGlowGreen {
+  0% {
+    box-shadow: 0 0 5px rgba(52, 211, 153, 0.3), 0 0 10px rgba(52, 211, 153, 0.2), 0 0 15px rgba(52, 211, 153, 0.1);
+    border-color: rgba(52, 211, 153, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.6), 0 0 30px rgba(52, 211, 153, 0.4), 0 0 40px rgba(52, 211, 153, 0.2);
+    border-color: rgba(52, 211, 153, 1);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(52, 211, 153, 0.3), 0 0 10px rgba(52, 211, 153, 0.2), 0 0 15px rgba(52, 211, 153, 0.1);
+    border-color: rgba(52, 211, 153, 0.8);
+  }
+}
+
+/* Subtle success animation */
+@keyframes successBounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .payment-interface {
   width: 100%;
   max-width: 100%;
@@ -739,7 +784,7 @@
 
 .payment-card {
   background: var(--card);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 0.75rem;
   display: flex;
@@ -755,15 +800,27 @@
 }
 
 .pos-interface {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-  border: 2px solid var(--accent);
-  box-shadow: 0 0 20px rgba(138, 180, 248, 0.1);
+  background: var(--card);
+}
+
+.pos-interface.transmitting {
+  animation: pulseGlow 1.5s ease-in-out infinite;
 }
 
 .customer-interface {
-  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
-  border: 2px solid var(--ok);
-  box-shadow: 0 0 20px rgba(52, 211, 153, 0.1);
+  background: var(--card);
+}
+
+.customer-interface.transmitting {
+  animation: pulseGlowGreen 1.5s ease-in-out infinite;
+}
+
+.pos-interface.success {
+  animation: successBounce 0.3s ease-out;
+}
+
+.customer-interface.success {
+  animation: successBounce 0.3s ease-out;
 }
 
 .card-header {
@@ -777,6 +834,14 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
+}
+
+.pos-interface .card-header h3 {
+  color: var(--accent);
+}
+
+.customer-interface .card-header h3 {
+  color: var(--ok);
 }
 
 .toggle {

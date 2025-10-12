@@ -199,10 +199,10 @@ body {
 }
 
 .nav-button.active {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: #4a7cff;
+  border-color: #4a7cff;
   color: white;
-  box-shadow: 0 2px 8px rgba(138, 180, 248, 0.3);
+  box-shadow: 0 2px 8px rgba(74, 124, 255, 0.3);
 }
 
 /* Sidebar Profile Selector */

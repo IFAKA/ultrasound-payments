@@ -62,6 +62,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
   const analyserRef = useRef<AnalyserNode | null>(null)
   const dataArrayRef = useRef<Uint8Array | null>(null)
   const rafIdRef = useRef<number | null>(null)
+  const customerPinInputRef = useRef<HTMLInputElement | null>(null)
   
   // Use refs for immediate state tracking (like the working example)
   const merchantStateRef = useRef<StateType>('idle')
@@ -607,6 +608,10 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
       setCustomerStatus('Enter PIN to authorize.')
       return
     }
+    if (pin.length !== 4) {
+      setCustomerStatus('PIN must be exactly 4 digits.')
+      return
+    }
     
     setCustomerStatus('Authorizing payment...')
     setShowCustomerLoading(true)
@@ -773,6 +778,16 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
     }
   }
 
+  // Focus PIN input when it appears
+  useEffect(() => {
+    if (showCustomerInput && customerPinInputRef.current) {
+      // Small delay to ensure the input is fully rendered
+      setTimeout(() => {
+        customerPinInputRef.current?.focus()
+      }, 100)
+    }
+  }, [showCustomerInput])
+
   // Start receivers when ready
   useEffect(() => {
     paymentLogger.system.effect('Starting receivers', { isReady, merchantEnabled, customerEnabled, profile })
@@ -817,7 +832,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
 
       <div className="payment-grid">
         {/* Merchant/POS Interface */}
-        <div className={`payment-card pos-interface ${!merchantEnabled ? 'disabled' : ''}`}>
+        <div className={`payment-card pos-interface ${!merchantEnabled ? 'disabled' : ''} ${merchantTransmitting ? 'transmitting' : ''} ${showMerchantSuccess ? 'success' : ''}`}>
           <div className="card-header">
             <h3>💳 POS Terminal</h3>
             <label className="toggle">
@@ -887,7 +902,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
         </div>
 
         {/* Customer Interface */}
-        <div className={`payment-card customer-interface ${!customerEnabled ? 'disabled' : ''}`}>
+        <div className={`payment-card customer-interface ${!customerEnabled ? 'disabled' : ''} ${customerTransmitting ? 'transmitting' : ''} ${showCustomerSuccess ? 'success' : ''}`}>
           <div className="card-header">
             <h3>📱 Customer Payment</h3>
             <label className="toggle">
@@ -935,15 +950,24 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
             ) : showCustomerInput ? (
               <div className="input-section">
                 <input 
+                  ref={customerPinInputRef}
                   type="text"
                   placeholder="Enter 4-digit PIN"
                   value={customerPin}
-                  onChange={(e) => setCustomerPin(e.target.value)}
-                  onKeyUp={(e) => e.key === 'Enter' && sendPaymentAck()}
+                  onChange={(e) => {
+                    // Only allow numbers
+                    const value = e.target.value.replace(/[^0-9]/g, '')
+                    setCustomerPin(value)
+                  }}
+                  onKeyUp={(e) => {
+                    if (e.key === 'Enter' && customerPin.length === 4) {
+                      sendPaymentAck()
+                    }
+                  }}
                   maxLength={4}
                   disabled={!customerEnabled || !isReady}
                 />
-                <div className="input-hint">Enter PIN and press Enter to pay</div>
+                <div className="input-hint">Enter 4-digit PIN and press Enter to pay</div>
               </div>
             ) : showCustomerLoading ? (
               <div className="loading-section">
