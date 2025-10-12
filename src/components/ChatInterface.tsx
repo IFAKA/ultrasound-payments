@@ -3,6 +3,10 @@ import { ProfileType, Message } from '../types'
 import { initializeQuiet, isQuietReady } from '../utils/quietInit'
 import { chatLogger, audioLogger } from '../utils/logger'
 import ProfileSelector from './ProfileSelector'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 interface ChatInterfaceProps {
   profile: ProfileType
@@ -335,12 +339,6 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
 
   return (
     <div className="max-w-3xl mx-auto p-4 h-[calc(100vh-200px)] flex flex-col">
-      {!isMobile && (
-        <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
-          <h2 className="m-0 text-2xl font-semibold text-gray-100">💬 Ultrasound Audio Chat</h2>
-        </div>
-      )}
-
       {/* Profile Selector - Mobile */}
       {isMobile && (
         <div className="mb-3 flex justify-center w-full">
@@ -353,23 +351,31 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-4 p-3 bg-gray-800 rounded-lg border border-gray-700 flex-wrap gap-2">
-        <canvas 
-          ref={micVizRef} 
-          width="220" 
-          height="20" 
-          className="w-[150px] h-5 bg-transparent rounded"
-          aria-label="microphone activity"
-          title="Microphone activity"
-        />
-        <span className="font-mono text-xs text-green-400 min-w-[80px] text-center">{detectedFreq}</span>
-        <span className="text-xs text-gray-400">Audio: {audioLevel}%</span>
-      </div>
+      <Card className="mb-4">
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <canvas 
+              ref={micVizRef} 
+              width="220" 
+              height="20" 
+              className="w-[150px] h-5 bg-transparent rounded"
+              aria-label="microphone activity"
+              title="Microphone activity"
+            />
+            <Badge variant="secondary" className="font-mono text-xs min-w-[80px] text-center">
+              {detectedFreq}
+            </Badge>
+            <Badge variant="outline" className="text-xs">
+              Audio: {audioLevel}%
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div className="flex-1 flex flex-col bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
-        <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3 max-h-96">
+      <Card className="flex-1 flex flex-col overflow-hidden">
+        <CardContent className="flex-1 p-4 overflow-y-auto flex flex-col gap-3 max-h-96">
           {messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-center text-gray-400">
+            <div className="flex items-center justify-center h-full text-center text-muted-foreground">
               <p className="m-0 text-base">No messages yet. Start typing to send your first ultrasound message!</p>
             </div>
           ) : (
@@ -382,12 +388,12 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
               >
                 <div className={`px-4 py-3 rounded-xl text-sm leading-relaxed break-words ${
                   message.type === 'sent' 
-                    ? 'bg-blue-600 text-white rounded-br-md' 
-                    : 'bg-gray-700 text-gray-100 border border-gray-600 rounded-bl-md'
+                    ? 'bg-primary text-primary-foreground rounded-br-md' 
+                    : 'bg-muted text-muted-foreground rounded-bl-md'
                 }`}>
                   {message.text}
                 </div>
-                <div className={`text-xs text-gray-400 mt-1 px-2 ${
+                <div className={`text-xs text-muted-foreground mt-1 px-2 ${
                   message.type === 'sent' ? 'text-right' : 'text-left'
                 }`}>
                   {formatTime(message.timestamp)}
@@ -396,10 +402,10 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
             ))
           )}
           <div ref={messagesEndRef} />
-        </div>
+        </CardContent>
 
-        <div className="flex p-4 gap-3 border-t border-gray-700 bg-gray-800">
-          <input
+        <div className="flex p-4 gap-3 border-t">
+          <Input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -407,24 +413,26 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
             placeholder="Type your message..."
             disabled={!isReady || isTransmitting}
             maxLength={100}
-            className="flex-1 bg-gray-900 border border-gray-600 text-gray-100 px-4 py-3 rounded-lg text-base focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1"
           />
-          <button 
+          <Button 
             onClick={sendMessage}
             disabled={!isReady || !newMessage.trim() || isTransmitting}
-            className="bg-blue-600 border-none text-white px-4 py-3 rounded-lg cursor-pointer text-base flex items-center justify-center min-w-[50px] transition-all duration-200 ease-in-out hover:bg-blue-700 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="min-w-[50px]"
           >
             {isTransmitting ? <div className="spinner w-4 h-4 border-2"></div> : '📡'}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
 
       {!isReady && (
         <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/80 flex items-center justify-center z-[1000]">
-          <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 text-center flex flex-col gap-4 items-center">
-            <div className="spinner w-8 h-8"></div>
-            <p className="m-0 text-gray-100 text-base">Initializing ultrasound communication...</p>
-          </div>
+          <Card className="p-8 text-center">
+            <CardContent className="flex flex-col gap-4 items-center">
+              <div className="spinner w-8 h-8"></div>
+              <p className="m-0 text-base">Initializing ultrasound communication...</p>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { ProfileType } from '../types'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface ProfileSelectorProps {
   profile: ProfileType
@@ -14,18 +15,18 @@ const ProfileSelector = ({ profile, onProfileChange, disabled = false }: Profile
 
   return (
     <div className="profile-selector">
-      <select 
-        value={profile} 
-        onChange={(e) => onProfileChange(e.target.value as ProfileType)}
-        disabled={disabled}
-        className="bg-gray-800 border border-gray-700 text-gray-100 px-4 py-2 rounded-lg text-sm w-full text-center disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {profiles.map((p) => (
-          <option key={p.value} value={p.value}>
-            {p.label}
-          </option>
-        ))}
-      </select>
+      <Select value={profile} onValueChange={onProfileChange} disabled={disabled}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select profile" />
+        </SelectTrigger>
+        <SelectContent>
+          {profiles.map((p) => (
+            <SelectItem key={p.value} value={p.value}>
+              {p.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }
