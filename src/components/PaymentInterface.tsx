@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import './PaymentInterface.css'
 import { ProfileType, StateType, PaymentRequest } from '../types'
 import { initializeQuiet } from '../utils/quietInit'
 import { paymentLogger, audioLogger, seenLogger } from '../utils/logger'
@@ -799,65 +798,74 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
 
 
   return (
-    <div className="payment-interface">
+    <div className="w-full max-w-full p-2 box-border flex flex-col h-full overflow-y-auto overflow-x-hidden">
       {!isMobile && (
-        <div className="payment-header">
-          <h2>💳 Ultrasound Payment System</h2>
+        <div className="flex justify-center items-center mb-2 flex-wrap gap-2 w-full">
+          <h2 className="m-0 text-lg font-semibold text-gray-100 text-center">💳 Ultrasound Payment System</h2>
         </div>
       )}
 
       {/* Profile Selector - Mobile */}
       {isMobile && (
-        <div className="mobile-profile-selector">
-          <ProfileSelector 
-            profile={profile} 
-            onProfileChange={onProfileChange}
-          />
+        <div className="mb-3 flex justify-center w-full">
+          <div className="w-full">
+            <ProfileSelector 
+              profile={profile} 
+              onProfileChange={onProfileChange}
+            />
+          </div>
         </div>
       )}
 
-      <div className="audio-monitor">
+      <div className="flex items-center justify-between mb-3 p-2 bg-gray-800 rounded-md border border-gray-700 flex-wrap gap-1">
         <canvas 
           ref={micVizRef} 
           width="220" 
           height="20" 
-          className="mic-visualizer"
+          className="w-[150px] h-5 bg-transparent rounded"
           aria-label="microphone activity"
           title="Microphone activity"
         />
-        <span className="freq-display">{detectedFreq}</span>
-        <span className="audio-level">Audio: {audioLevel}%</span>
-        <span className="fps-counter">{fps}</span>
+        <span className="font-mono text-xs text-green-400 min-w-[80px] text-center">{detectedFreq}</span>
+        <span className="text-xs text-gray-400">Audio: {audioLevel}%</span>
+        <span className="text-xs text-gray-400">{fps}</span>
       </div>
 
-      <div className="payment-grid">
+      <div className="flex flex-col md:flex-row gap-3 items-stretch w-full flex-1 min-h-0 max-w-full overflow-x-hidden">
         {/* Merchant/POS Interface */}
-        <div className={`payment-card pos-interface ${!merchantEnabled ? 'disabled' : ''} ${merchantTransmitting ? 'transmitting' : ''} ${showMerchantSuccess ? 'success' : ''}`}>
-          <div className="card-header">
-            <h3>💳 POS Terminal</h3>
-            <label className="toggle">
+        <div className={`bg-gray-800 border border-gray-600 rounded-lg p-3 flex flex-col flex-1 min-h-0 md:min-h-[300px] transition-all duration-200 ease-in-out ${
+          !merchantEnabled ? 'opacity-50 grayscale-[0.3]' : ''
+        } ${
+          merchantTransmitting ? 'animate-pulse-glow' : ''
+        } ${
+          showMerchantSuccess ? 'animate-success-bounce' : ''
+        }`}>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="m-0 text-base font-semibold text-blue-400">💳 POS Terminal</h3>
+            <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
               <input 
                 type="checkbox" 
                 checked={merchantEnabled}
                 onChange={(e) => setMerchantEnabled(e.target.checked)}
+                className="w-10 h-6 bg-gray-700 border border-gray-600 rounded-full relative cursor-pointer outline-none transition-all duration-200 ease-in-out appearance-none before:content-[''] before:absolute before:top-1/2 before:left-0.5 before:w-[18px] before:h-[18px] before:rounded-full before:bg-gray-400 before:transform before:-translate-y-1/2 before:transition-all before:duration-200 before:ease-in-out checked:bg-blue-600/35 checked:border-blue-600/60 checked:before:translate-x-5 checked:before:bg-white focus-visible:ring-2 focus-visible:ring-blue-500"
               />
             </label>
           </div>
           
-          <div className="card-body">
+          <div className="flex-1 flex items-center justify-center min-h-0 w-full box-border">
             {showMerchantSuccess ? (
-              <div className="success-section">
-                <div className="success-value">{merchantValue}</div>
-                <div className="success-message">
-                  <span className="check">✓</span>
+              <div className="w-full flex flex-col gap-4 items-center box-border max-w-full">
+                <div className="text-2xl font-semibold text-gray-100">{merchantValue}</div>
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <span className="w-4 h-4 rounded-full bg-green-500 text-green-900 font-black flex items-center justify-center text-[10px]">✓</span>
                   Payment Received
                 </div>
               </div>
             ) : showMerchantRetry ? (
-              <div className="retry-section">
-                <div className="retry-message">No response received. Try again?</div>
+              <div className="w-full flex flex-col gap-3 items-center box-border max-w-full p-4">
+                <div className="text-yellow-400 text-sm text-center">No response received. Try again?</div>
                 <button 
-                  className="retry-button"
+                  className="bg-blue-600 text-white border-none px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors duration-200 ease-in-out hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => {
                     setShowMerchantRetry(false)
                     setWaitingForAuthorization(false)
@@ -869,20 +877,20 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
                 </button>
               </div>
             ) : merchantTransmitting ? (
-              <div className="transmitting-section">
+              <div className="w-full flex flex-col gap-2 items-center box-border max-w-full p-4">
                 <div className="spinner"></div>
-                <div className="transmitting-text">Transmitting payment request...</div>
+                <div className="text-base text-gray-400 text-center">Transmitting payment request...</div>
               </div>
             ) : waitingForAuthorization ? (
-              <div className="waiting-section">
-                <div className="waiting-message">Waiting for authorization...</div>
+              <div className="w-full flex flex-col gap-3 items-center box-border max-w-full">
+                <div className="text-base text-gray-400 text-center">Waiting for authorization...</div>
               </div>
             ) : showMerchantLoading ? (
-              <div className="loading-section">
+              <div className="w-full flex flex-col gap-4 items-center box-border max-w-full">
                 <div className="spinner"></div>
               </div>
             ) : (
-              <div className="input-section">
+              <div className="w-full flex flex-col gap-3 items-center box-border max-w-full">
                 <input 
                   type="text"
                   placeholder="Enter amount (e.g., 25.50)"
@@ -890,44 +898,52 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
                   onChange={(e) => setMerchantAmount(e.target.value)}
                   onKeyUp={(e) => e.key === 'Enter' && sendPaymentRequest()}
                   disabled={!merchantEnabled || !isReady}
+                  className="w-full bg-gray-900 border border-gray-600 text-gray-100 px-4 py-3 rounded-lg text-base text-center box-border max-w-full focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
-                <div className="input-hint">Press Enter to generate payment request</div>
+                <div className="text-xs text-gray-400 text-center">Press Enter to generate payment request</div>
               </div>
             )}
           </div>
           
-          <div className="card-footer">
-            <div className="status">{merchantStatus}</div>
+          <div className="mt-4 pt-4 border-t border-gray-600">
+            <div className="text-xs text-gray-400 text-center">{merchantStatus}</div>
           </div>
         </div>
 
         {/* Customer Interface */}
-        <div className={`payment-card customer-interface ${!customerEnabled ? 'disabled' : ''} ${customerTransmitting ? 'transmitting' : ''} ${showCustomerSuccess ? 'success' : ''}`}>
-          <div className="card-header">
-            <h3>📱 Customer Payment</h3>
-            <label className="toggle">
+        <div className={`bg-gray-800 border border-gray-600 rounded-lg p-3 flex flex-col flex-1 min-h-0 md:min-h-[300px] transition-all duration-200 ease-in-out ${
+          !customerEnabled ? 'opacity-50 grayscale-[0.3]' : ''
+        } ${
+          customerTransmitting ? 'animate-pulse-glow-green' : ''
+        } ${
+          showCustomerSuccess ? 'animate-success-bounce' : ''
+        }`}>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="m-0 text-base font-semibold text-green-400">📱 Customer Payment</h3>
+            <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
               <input 
                 type="checkbox" 
                 checked={customerEnabled}
                 onChange={(e) => setCustomerEnabled(e.target.checked)}
+                className="w-10 h-6 bg-gray-700 border border-gray-600 rounded-full relative cursor-pointer outline-none transition-all duration-200 ease-in-out appearance-none before:content-[''] before:absolute before:top-1/2 before:left-0.5 before:w-[18px] before:h-[18px] before:rounded-full before:bg-gray-400 before:transform before:-translate-y-1/2 before:transition-all before:duration-200 before:ease-in-out checked:bg-blue-600/35 checked:border-blue-600/60 checked:before:translate-x-5 checked:before:bg-white focus-visible:ring-2 focus-visible:ring-blue-500"
               />
             </label>
           </div>
           
-          <div className="card-body">
+          <div className="flex-1 flex items-center justify-center min-h-0 w-full box-border">
             {showCustomerSuccess ? (
-              <div className="success-section">
-                <div className="success-value">{customerValue}</div>
-                <div className="success-message">
-                  <span className="check">✓</span>
+              <div className="w-full flex flex-col gap-4 items-center box-border max-w-full">
+                <div className="text-2xl font-semibold text-gray-100">{customerValue}</div>
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <span className="w-4 h-4 rounded-full bg-green-500 text-green-900 font-black flex items-center justify-center text-[10px]">✓</span>
                   Payment Sent
                 </div>
               </div>
             ) : showCustomerRetry ? (
-              <div className="retry-section">
-                <div className="retry-message">No confirmation received. Try again?</div>
+              <div className="w-full flex flex-col gap-3 items-center box-border max-w-full p-4">
+                <div className="text-yellow-400 text-sm text-center">No confirmation received. Try again?</div>
                 <button 
-                  className="retry-button"
+                  className="bg-blue-600 text-white border-none px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors duration-200 ease-in-out hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => {
                     setShowCustomerRetry(false)
                     setWaitingForConfirmation(false)
@@ -939,16 +955,16 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
                 </button>
               </div>
             ) : customerTransmitting ? (
-              <div className="transmitting-section">
+              <div className="w-full flex flex-col gap-2 items-center box-border max-w-full p-4">
                 <div className="spinner"></div>
-                <div className="transmitting-text">Transmitting authorization...</div>
+                <div className="text-base text-gray-400 text-center">Transmitting authorization...</div>
               </div>
             ) : waitingForConfirmation ? (
-              <div className="waiting-section">
-                <div className="waiting-message">Waiting for confirmation...</div>
+              <div className="w-full flex flex-col gap-3 items-center box-border max-w-full">
+                <div className="text-base text-gray-400 text-center">Waiting for confirmation...</div>
               </div>
             ) : showCustomerInput ? (
-              <div className="input-section">
+              <div className="w-full flex flex-col gap-3 items-center box-border max-w-full">
                 <input 
                   ref={customerPinInputRef}
                   type="text"
@@ -966,31 +982,32 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
                   }}
                   maxLength={4}
                   disabled={!customerEnabled || !isReady}
+                  className="w-full bg-gray-900 border border-gray-600 text-gray-100 px-4 py-3 rounded-lg text-base text-center box-border max-w-full focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
-                <div className="input-hint">Enter 4-digit PIN and press Enter to pay</div>
+                <div className="text-xs text-gray-400 text-center">Enter 4-digit PIN and press Enter to pay</div>
               </div>
             ) : showCustomerLoading ? (
-              <div className="loading-section">
+              <div className="w-full flex flex-col gap-4 items-center box-border max-w-full">
                 <div className="spinner"></div>
               </div>
             ) : (
-              <div className="waiting-section">
-                <div className="waiting-message">Waiting for payment request…</div>
+              <div className="w-full flex flex-col gap-3 items-center box-border max-w-full">
+                <div className="text-base text-gray-400 text-center">Waiting for payment request…</div>
               </div>
             )}
           </div>
           
-          <div className="card-footer">
-            <div className="status">{customerStatus}</div>
+          <div className="mt-4 pt-4 border-t border-gray-600">
+            <div className="text-xs text-gray-400 text-center">{customerStatus}</div>
           </div>
         </div>
       </div>
 
       {!isReady && (
-        <div className="loading-overlay">
-          <div className="loading-content">
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/80 flex items-center justify-center z-[1000]">
+          <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 text-center flex flex-col gap-4 items-center">
             <div className="spinner"></div>
-            <p>Initializing ultrasound communication...</p>
+            <p className="m-0 text-gray-100 text-base">Initializing ultrasound communication...</p>
           </div>
         </div>
       )}

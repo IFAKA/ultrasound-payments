@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import './TextInterface.css'
 import { ProfileType, TransmissionRecord } from '../types'
 import { initializeQuiet, isQuietReady } from '../utils/quietInit'
 import { textLogger, audioLogger } from '../utils/logger'
@@ -336,42 +335,44 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
   }
 
   return (
-    <div className="text-interface">
+    <div className="max-w-5xl mx-auto p-4">
       {!isMobile && (
-        <div className="text-header">
-          <h2>📝 Ultrasound Text Transfer</h2>
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
+          <h2 className="m-0 text-2xl font-semibold text-gray-100">📝 Ultrasound Text Transfer</h2>
         </div>
       )}
 
       {/* Profile Selector - Mobile */}
       {isMobile && (
-        <div className="mobile-profile-selector">
-          <ProfileSelector 
-            profile={profile} 
-            onProfileChange={onProfileChange}
-          />
+        <div className="mb-3 flex justify-center w-full">
+          <div className="w-full">
+            <ProfileSelector 
+              profile={profile} 
+              onProfileChange={onProfileChange}
+            />
+          </div>
         </div>
       )}
 
-      <div className="audio-monitor">
+      <div className="flex items-center justify-between p-3 bg-gray-800 rounded-lg border border-gray-700 flex-wrap gap-2">
         <canvas 
           ref={micVizRef} 
           width="220" 
           height="20" 
-          className="mic-visualizer"
+          className="w-[150px] h-5 bg-transparent rounded"
           aria-label="microphone activity"
           title="Microphone activity"
         />
-        <span className="freq-display">{detectedFreq}</span>
-        <span className="audio-level">Audio: {audioLevel}%</span>
+        <span className="font-mono text-xs text-green-400 min-w-[80px] text-center">{detectedFreq}</span>
+        <span className="text-xs text-gray-400">Audio: {audioLevel}%</span>
       </div>
 
-      <div className="text-container">
-        <div className="text-sections">
+      <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Send Section */}
-          <div className="text-section send-section">
-            <h3>📤 Send Text</h3>
-            <div className="input-group">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 border-l-4 border-l-blue-400">
+            <h3 className="m-0 mb-4 text-lg font-semibold text-gray-100">📤 Send Text</h3>
+            <div className="flex flex-col gap-3">
               <textarea
                 value={textToSend}
                 onChange={(e) => setTextToSend(e.target.value)}
@@ -379,30 +380,31 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
                 disabled={!isReady || isTransmitting}
                 maxLength={500}
                 rows={4}
+                className="w-full bg-gray-900 border border-gray-600 text-gray-100 px-4 py-3 rounded-lg text-sm font-inherit resize-y min-h-[100px] focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 disabled:opacity-50 disabled:cursor-not-allowed"
               />
-              <div className="input-footer">
-                <span className="char-count">{textToSend.length}/500</span>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-400">{textToSend.length}/500</span>
                 <button 
                   onClick={sendText}
                   disabled={!isReady || !textToSend.trim() || isTransmitting}
-                  className="send-button"
+                  className="bg-blue-600 border-none text-white px-4 py-2 rounded-lg cursor-pointer text-sm flex items-center gap-2 transition-all duration-200 ease-in-out hover:bg-blue-700 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  {isTransmitting ? <div className="spinner"></div> : '📡 Send'}
+                  {isTransmitting ? <div className="spinner w-3.5 h-3.5 border-2"></div> : '📡 Send'}
                 </button>
               </div>
             </div>
           </div>
 
           {/* Receive Section */}
-          <div className="text-section receive-section">
-            <h3>📥 Received Text</h3>
-            <div className="received-text">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 border-l-4 border-l-green-400">
+            <h3 className="m-0 mb-4 text-lg font-semibold text-gray-100">📥 Received Text</h3>
+            <div className="min-h-[120px] bg-gray-900 border border-gray-600 rounded-lg p-4 flex items-center justify-center">
               {receivedText ? (
-                <div className="text-content">
+                <div className="text-gray-100 text-sm leading-relaxed break-words w-full">
                   {receivedText}
                 </div>
               ) : (
-                <div className="empty-state">
+                <div className="text-gray-400 text-sm text-center italic">
                   No text received yet. Start transmitting to see received text here.
                 </div>
               )}
@@ -411,29 +413,31 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
         </div>
 
         {/* History Section */}
-        <div className="history-section">
-          <div className="history-header">
-            <h3>📋 Transmission History</h3>
-            <button onClick={clearHistory} className="clear-button">
+        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="m-0 text-lg font-semibold text-gray-100">📋 Transmission History</h3>
+            <button onClick={clearHistory} className="bg-transparent border border-gray-700 text-gray-400 px-4 py-2 rounded-lg cursor-pointer text-xs transition-all duration-200 ease-in-out hover:border-red-400 hover:text-red-400">
               🗑️ Clear
             </button>
           </div>
-          <div className="history-list">
+          <div className="max-h-72 overflow-y-auto flex flex-col gap-3">
             {transmissionHistory.length === 0 ? (
-              <div className="empty-state">
+              <div className="text-gray-400 text-sm text-center italic">
                 No transmissions yet. Send or receive text to see history here.
               </div>
             ) : (
               transmissionHistory.map((item) => (
-                <div key={item.id} className={`history-item ${item.type}`}>
-                  <div className="history-content">
+                <div key={item.id} className={`bg-gray-900 border border-gray-600 rounded-lg p-4 animate-history-slide ${
+                  item.type === 'sent' ? 'border-l-4 border-l-blue-400' : 'border-l-4 border-l-green-400'
+                }`}>
+                  <div className="text-gray-100 text-sm leading-relaxed mb-2 break-words">
                     {item.text}
                   </div>
-                  <div className="history-meta">
-                    <span className="history-type">
+                  <div className="flex justify-between items-center text-xs text-gray-400">
+                    <span className="font-semibold">
                       {item.type === 'sent' ? '📤 Sent' : '📥 Received'}
                     </span>
-                    <span className="history-time">
+                    <span className="font-mono">
                       {formatTime(item.timestamp)}
                     </span>
                   </div>
@@ -445,10 +449,10 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
       </div>
 
       {!isReady && (
-        <div className="loading-overlay">
-          <div className="loading-content">
-            <div className="spinner"></div>
-            <p>Initializing ultrasound communication...</p>
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/80 flex items-center justify-center z-[1000]">
+          <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 text-center flex flex-col gap-4 items-center">
+            <div className="spinner w-8 h-8"></div>
+            <p className="m-0 text-gray-100 text-base">Initializing ultrasound communication...</p>
           </div>
         </div>
       )}

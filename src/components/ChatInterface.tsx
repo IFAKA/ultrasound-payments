@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import './ChatInterface.css'
 import { ProfileType, Message } from '../types'
 import { initializeQuiet, isQuietReady } from '../utils/quietInit'
 import { chatLogger, audioLogger } from '../utils/logger'
@@ -335,52 +334,62 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
   }
 
   return (
-    <div className="chat-interface">
+    <div className="max-w-3xl mx-auto p-4 h-[calc(100vh-200px)] flex flex-col">
       {!isMobile && (
-        <div className="chat-header">
-          <h2>💬 Ultrasound Audio Chat</h2>
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
+          <h2 className="m-0 text-2xl font-semibold text-gray-100">💬 Ultrasound Audio Chat</h2>
         </div>
       )}
 
       {/* Profile Selector - Mobile */}
       {isMobile && (
-        <div className="mobile-profile-selector">
-          <ProfileSelector 
-            profile={profile} 
-            onProfileChange={onProfileChange}
-          />
+        <div className="mb-3 flex justify-center w-full">
+          <div className="w-full">
+            <ProfileSelector 
+              profile={profile} 
+              onProfileChange={onProfileChange}
+            />
+          </div>
         </div>
       )}
 
-      <div className="audio-monitor">
+      <div className="flex items-center justify-between mb-4 p-3 bg-gray-800 rounded-lg border border-gray-700 flex-wrap gap-2">
         <canvas 
           ref={micVizRef} 
           width="220" 
           height="20" 
-          className="mic-visualizer"
+          className="w-[150px] h-5 bg-transparent rounded"
           aria-label="microphone activity"
           title="Microphone activity"
         />
-        <span className="freq-display">{detectedFreq}</span>
-        <span className="audio-level">Audio: {audioLevel}%</span>
+        <span className="font-mono text-xs text-green-400 min-w-[80px] text-center">{detectedFreq}</span>
+        <span className="text-xs text-gray-400">Audio: {audioLevel}%</span>
       </div>
 
-      <div className="chat-container">
-        <div className="messages-container">
+      <div className="flex-1 flex flex-col bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+        <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3 max-h-96">
           {messages.length === 0 ? (
-            <div className="empty-state">
-              <p>No messages yet. Start typing to send your first ultrasound message!</p>
+            <div className="flex items-center justify-center h-full text-center text-gray-400">
+              <p className="m-0 text-base">No messages yet. Start typing to send your first ultrasound message!</p>
             </div>
           ) : (
             messages.map((message) => (
               <div 
                 key={message.id} 
-                className={`message ${message.type}`}
+                className={`flex flex-col max-w-[80%] animate-message-slide ${
+                  message.type === 'sent' ? 'self-end' : 'self-start'
+                }`}
               >
-                <div className="message-content">
+                <div className={`px-4 py-3 rounded-xl text-sm leading-relaxed break-words ${
+                  message.type === 'sent' 
+                    ? 'bg-blue-600 text-white rounded-br-md' 
+                    : 'bg-gray-700 text-gray-100 border border-gray-600 rounded-bl-md'
+                }`}>
                   {message.text}
                 </div>
-                <div className="message-time">
+                <div className={`text-xs text-gray-400 mt-1 px-2 ${
+                  message.type === 'sent' ? 'text-right' : 'text-left'
+                }`}>
                   {formatTime(message.timestamp)}
                 </div>
               </div>
@@ -389,7 +398,7 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="input-container">
+        <div className="flex p-4 gap-3 border-t border-gray-700 bg-gray-800">
           <input
             type="text"
             value={newMessage}
@@ -398,22 +407,23 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
             placeholder="Type your message..."
             disabled={!isReady || isTransmitting}
             maxLength={100}
+            className="flex-1 bg-gray-900 border border-gray-600 text-gray-100 px-4 py-3 rounded-lg text-base focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <button 
             onClick={sendMessage}
             disabled={!isReady || !newMessage.trim() || isTransmitting}
-            className="send-button"
+            className="bg-blue-600 border-none text-white px-4 py-3 rounded-lg cursor-pointer text-base flex items-center justify-center min-w-[50px] transition-all duration-200 ease-in-out hover:bg-blue-700 hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            {isTransmitting ? <div className="spinner"></div> : '📡'}
+            {isTransmitting ? <div className="spinner w-4 h-4 border-2"></div> : '📡'}
           </button>
         </div>
       </div>
 
       {!isReady && (
-        <div className="loading-overlay">
-          <div className="loading-content">
-            <div className="spinner"></div>
-            <p>Initializing ultrasound communication...</p>
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/80 flex items-center justify-center z-[1000]">
+          <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 text-center flex flex-col gap-4 items-center">
+            <div className="spinner w-8 h-8"></div>
+            <p className="m-0 text-gray-100 text-base">Initializing ultrasound communication...</p>
           </div>
         </div>
       )}
