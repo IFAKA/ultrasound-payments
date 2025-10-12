@@ -1,0 +1,62 @@
+graph LR
+    subgraph "App Layer"
+        App["App.tsx<br/>Main Application<br/>• Tab management<br/>• Mobile detection<br/>• Sidebar control"]
+    end
+    
+    subgraph "Interface Layer"
+        Payment["PaymentInterface.tsx<br/>💳 Payment System<br/>• POS Terminal<br/>• Customer Interface<br/>• Payment Flow"]
+        Chat["ChatInterface.tsx<br/>💬 Audio Chat<br/>• Message History<br/>• Real-time Chat<br/>• Audio Visualization"]
+        Text["TextInterface.tsx<br/>📝 Text Transfer<br/>• Text Transmission<br/>• History Tracking<br/>• Bidirectional Transfer"]
+    end
+    
+    subgraph "Shared Components"
+        ProfileSelector["ProfileSelector.tsx<br/>Transmission Profiles<br/>• Profile Selection<br/>• Frequency Options<br/>• Device Optimization"]
+    end
+    
+    subgraph "Audio System"
+        AudioMonitor["Audio Monitor<br/>• Frequency Display<br/>• Audio Level<br/>• FPS Counter<br/>• Microphone Visualizer"]
+        QuietInit["Quiet.js Utils<br/>• Library Initialization<br/>• Error Handling<br/>• Ready State"]
+    end
+    
+    subgraph "Types & Utils"
+        Types["types.ts<br/>• ProfileType<br/>• StateType<br/>• PaymentRequest<br/>• Message<br/>• TransmissionRecord"]
+    end
+    
+    %% App to Interfaces
+    App --> Payment
+    App --> Chat
+    App --> Text
+    
+    %% Shared Components
+    App --> ProfileSelector
+    Payment --> ProfileSelector
+    Chat --> ProfileSelector
+    Text --> ProfileSelector
+    
+    %% Audio System Integration
+    Payment --> AudioMonitor
+    Chat --> AudioMonitor
+    Text --> AudioMonitor
+    
+    Payment --> QuietInit
+    Chat --> QuietInit
+    Text --> QuietInit
+    
+    %% Types Usage
+    Payment --> Types
+    Chat --> Types
+    Text --> Types
+    ProfileSelector --> Types
+    
+    %% Styling
+    classDef app fill:#2a2a2a,stroke:#4a9eff,stroke-width:3px,color:#fff
+    classDef interface fill:#1a2a1a,stroke:#4caf50,stroke-width:2px,color:#fff
+    classDef shared fill:#2a1a1a,stroke:#ff5722,stroke-width:2px,color:#fff
+    classDef audio fill:#1a1a2a,stroke:#9c27b0,stroke-width:2px,color:#fff
+    classDef types fill:#2a2a1a,stroke:#ff9800,stroke-width:2px,color:#fff
+    
+    class App app
+    class Payment,Chat,Text interface
+    class ProfileSelector shared
+    class AudioMonitor,QuietInit audio
+    class Types types

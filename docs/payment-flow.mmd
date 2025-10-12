@@ -1,0 +1,35 @@
+sequenceDiagram
+    participant POS as POS Terminal<br/>(Merchant)
+    participant Customer as Customer Device
+    participant Audio as Ultrasound Audio<br/>Transmission
+    
+    Note over POS,Customer: Payment Request Phase
+    POS->>POS: User enters amount
+    POS->>POS: Generate payment request<br/>(PRQ:amount:currency:nonce:merchantId)
+    POS->>Audio: Transmit payment request<br/>via ultrasound
+    Audio-->>Customer: Receive payment request
+    Customer->>Customer: Display payment details<br/>(amount + currency)
+    Customer->>Customer: Show PIN input field
+    
+    Note over POS,Customer: Payment Authorization Phase
+    Customer->>Customer: User enters PIN
+    Customer->>Customer: Hash PIN with nonce<br/>(SHA-256)
+    Customer->>Customer: Generate ACK message<br/>(ACK:nonce:tokenHash:customerId)
+    Customer->>Audio: Transmit authorization<br/>via ultrasound
+    Audio-->>POS: Receive authorization
+    POS->>POS: Validate nonce match
+    POS->>POS: Verify payment state
+    POS->>POS: Set state to 'authorized'
+    POS->>POS: Display success message
+    
+    Note over POS,Customer: Payment Confirmation Phase
+    POS->>POS: Generate FIN message<br/>(FIN:nonce:merchantId)
+    POS->>Audio: Transmit confirmation<br/>via ultrasound
+    Audio-->>Customer: Receive confirmation
+    Customer->>Customer: Validate nonce match
+    Customer->>Customer: Set state to 'confirmed'
+    Customer->>Customer: Display payment success
+    
+    Note over POS,Customer: Payment Complete
+    POS->>POS: Show payment received<br/>with amount
+    Customer->>Customer: Show payment sent<br/>with amount

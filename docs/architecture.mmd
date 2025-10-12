@@ -1,0 +1,90 @@
+graph TB
+    subgraph "Browser Environment"
+        subgraph "React App"
+            App["App.tsx<br/>Main Application"]
+            Sidebar["Sidebar<br/>Navigation & Profile"]
+            MobileHeader["Mobile Header<br/>Mode Display"]
+        end
+        
+        subgraph "Interface Components"
+            Payment["PaymentInterface<br/>💳 Payment System"]
+            Chat["ChatInterface<br/>💬 Audio Chat"]
+            Text["TextInterface<br/>📝 Text Transfer"]
+        end
+        
+        subgraph "Shared Components"
+            ProfileSelector["ProfileSelector<br/>Transmission Profiles"]
+            AudioMonitor["Audio Monitor<br/>Frequency & Level Display"]
+        end
+        
+        subgraph "Audio Processing"
+            MicViz["Microphone Visualizer<br/>Canvas-based Audio Display"]
+            FreqDetect["Frequency Detection<br/>Real-time Analysis"]
+            AudioLevel["Audio Level<br/>Volume Monitoring"]
+        end
+        
+        subgraph "Quiet.js Integration"
+            QuietInit["Quiet.js Initialization<br/>Library Setup"]
+            Transmitter["Transmitter<br/>Audio Generation"]
+            Receiver["Receiver<br/>Audio Decoding"]
+        end
+    end
+    
+    subgraph "Audio System"
+        Microphone["Microphone<br/>Audio Input"]
+        Speakers["Speakers<br/>Audio Output"]
+        AudioContext["Web Audio API<br/>Audio Processing"]
+    end
+    
+    subgraph "Transmission Profiles"
+        Profiles["Profile Types<br/>• Mobile Audible (~12kHz)<br/>• Mobile Optimized (~15kHz)<br/>• Mobile Ultrasonic (~17kHz)<br/>• Standard Ultrasonic (~19kHz)<br/>• Audible (~4kHz)<br/>• Robust (Variable)<br/>• DTMF (Variable)"]
+    end
+    
+    %% Main App Flow
+    App --> Sidebar
+    App --> MobileHeader
+    App --> Payment
+    App --> Chat
+    App --> Text
+    
+    %% Component Relationships
+    Sidebar --> ProfileSelector
+    Payment --> AudioMonitor
+    Chat --> AudioMonitor
+    Text --> AudioMonitor
+    
+    %% Audio Processing Flow
+    AudioMonitor --> MicViz
+    AudioMonitor --> FreqDetect
+    AudioMonitor --> AudioLevel
+    
+    %% Quiet.js Integration
+    Payment --> QuietInit
+    Chat --> QuietInit
+    Text --> QuietInit
+    QuietInit --> Transmitter
+    QuietInit --> Receiver
+    
+    %% Audio System Integration
+    Microphone --> AudioContext
+    AudioContext --> MicViz
+    AudioContext --> FreqDetect
+    AudioContext --> AudioLevel
+    Transmitter --> Speakers
+    Receiver --> Microphone
+    
+    %% Profile Integration
+    ProfileSelector --> Profiles
+    Profiles --> Transmitter
+    Profiles --> Receiver
+    
+    %% Styling
+    classDef component fill:#2a2a2a,stroke:#4a9eff,stroke-width:2px,color:#fff
+    classDef audio fill:#1a4d1a,stroke:#4caf50,stroke-width:2px,color:#fff
+    classDef quiet fill:#4a1a4a,stroke:#9c27b0,stroke-width:2px,color:#fff
+    classDef profile fill:#4a3a1a,stroke:#ff9800,stroke-width:2px,color:#fff
+    
+    class App,Sidebar,MobileHeader,Payment,Chat,Text,ProfileSelector,AudioMonitor component
+    class Microphone,Speakers,AudioContext,MicViz,FreqDetect,AudioLevel audio
+    class QuietInit,Transmitter,Receiver quiet
+    class Profiles profile

@@ -1,0 +1,73 @@
+graph TD
+    subgraph "Audio Input Processing"
+        Mic["Microphone Input<br/>Raw Audio Stream"]
+        AudioCtx["Web Audio Context<br/>Audio Processing"]
+        Analyser["Analyser Node<br/>FFT Analysis"]
+        DataArray["Frequency Data Array<br/>Uint8Array"]
+    end
+    
+    subgraph "Real-time Analysis"
+        FreqBuffer["Frequency Buffer<br/>Rolling Window (1s)"]
+        WeightedAvg["Weighted Average<br/>Recent readings prioritized"]
+        Throttle["Update Throttling<br/>500ms intervals"]
+        Display["Frequency Display<br/>Stable UI updates"]
+    end
+    
+    subgraph "Audio Visualization"
+        Canvas["Canvas Element<br/>Visual Display"]
+        Bars["Audio Bars<br/>Frequency visualization"]
+        Level["Audio Level<br/>Volume indicator"]
+    end
+    
+    subgraph "Quiet.js Processing"
+        QuietInit["Quiet.js Initialization<br/>Library setup"]
+        Profile["Transmission Profile<br/>Frequency selection"]
+        Encoder["Audio Encoder<br/>Data to sound"]
+        Decoder["Audio Decoder<br/>Sound to data"]
+    end
+    
+    subgraph "Transmission"
+        Transmitter["Transmitter<br/>Generate audio signal"]
+        Receiver["Receiver<br/>Decode audio signal"]
+        Speaker["Speaker Output<br/>Audio transmission"]
+    end
+    
+    %% Audio Input Flow
+    Mic --> AudioCtx
+    AudioCtx --> Analyser
+    Analyser --> DataArray
+    
+    %% Real-time Analysis Flow
+    DataArray --> FreqBuffer
+    FreqBuffer --> WeightedAvg
+    WeightedAvg --> Throttle
+    Throttle --> Display
+    
+    %% Visualization Flow
+    DataArray --> Canvas
+    Canvas --> Bars
+    DataArray --> Level
+    
+    %% Quiet.js Flow
+    QuietInit --> Profile
+    Profile --> Encoder
+    Profile --> Decoder
+    
+    %% Transmission Flow
+    Encoder --> Transmitter
+    Transmitter --> Speaker
+    Mic --> Receiver
+    Receiver --> Decoder
+    
+    %% Styling
+    classDef input fill:#1a4d1a,stroke:#4caf50,stroke-width:2px,color:#fff
+    classDef analysis fill:#1a3a4d,stroke:#2196f3,stroke-width:2px,color:#fff
+    classDef visual fill:#4a1a3a,stroke:#e91e63,stroke-width:2px,color:#fff
+    classDef quiet fill:#4a1a4a,stroke:#9c27b0,stroke-width:2px,color:#fff
+    classDef transmission fill:#4a3a1a,stroke:#ff9800,stroke-width:2px,color:#fff
+    
+    class Mic,AudioCtx,Analyser,DataArray input
+    class FreqBuffer,WeightedAvg,Throttle,Display analysis
+    class Canvas,Bars,Level visual
+    class QuietInit,Profile,Encoder,Decoder quiet
+    class Transmitter,Receiver,Speaker transmission
