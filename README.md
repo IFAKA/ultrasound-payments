@@ -14,7 +14,7 @@ The application is built with a modular React architecture that separates concer
 
 ## 🚀 Live Demo
 
-[Deploy to Vercel](https://vercel.com/new/clone?repository-url=https://github.com/your-username/ultrasound-payments)
+[Deploy to Vercel](https://vercel.com/new/clone?repository-url=https://github.com/IFAKA/ultrasound-payments)
 
 ## ✨ Features
 
@@ -47,7 +47,7 @@ The payment system implements a secure three-phase protocol:
 
 ## 🛠️ Technical Features
 
-- **Multiple Transmission Profiles**: From audible (4kHz) to ultrasonic (19kHz)
+- **Multiple Transmission Profiles**: Standard ultrasonic (19kHz) and audible (4.2kHz)
 - **Real-time Audio Visualization**: Live microphone activity display
 - **Device Compatibility**: Works on desktop and mobile devices
 - **Modern UI**: Dark theme with responsive design
@@ -67,13 +67,8 @@ The application implements sophisticated audio processing with:
 
 | Profile | Frequency | Use Case |
 |---------|-----------|----------|
-| Mobile Audible | ~12kHz | Mobile devices, audible range |
-| Mobile Optimized | ~15kHz | Mobile devices, optimized |
-| Mobile Ultrasonic | ~17kHz | Mobile devices, near-ultrasonic |
 | Standard Ultrasonic | ~19kHz | Desktop, imperceptible |
-| Audible | ~4kHz | Audible range, low bitrate |
-| Robust | Variable | High reliability |
-| DTMF | Variable | Audible, very low bitrate |
+| Feature Phone Compatible | ~4.2kHz | Audible range, low bitrate |
 
 ## 🚀 Getting Started
 
@@ -86,7 +81,7 @@ The application implements sophisticated audio processing with:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/ultrasound-payments.git
+   git clone https://github.com/IFAKA/ultrasound-payments.git
    cd ultrasound-payments
    ```
 
@@ -181,7 +176,7 @@ The app can be deployed to any static hosting service:
 #### Secure Payment Protocol
 - **Nonce-based Security**: Unique tokens for each payment request
 - **Local PIN Hashing**: SHA-256 hashing before transmission
-- **State Management**: Robust state tracking with refs for immediate updates
+- **State Management**: Comprehensive state tracking including payment-specific states (idle, listening, transmitting, processing, success, error, awaiting_payack, authorized, received_payreq, confirmed, sent_payack)
 - **Message Deduplication**: Prevents duplicate message processing
 
 ### File Structure
@@ -190,14 +185,20 @@ The app can be deployed to any static hosting service:
 src/
 ├── components/
 │   ├── PaymentInterface.tsx    # Payment system with POS/Customer
+│   ├── PaymentInterface.css    # Payment interface styles
 │   ├── ChatInterface.tsx       # Real-time audio chat
+│   ├── ChatInterface.css       # Chat interface styles
 │   ├── TextInterface.tsx       # Text transfer system
+│   ├── TextInterface.css       # Text interface styles
 │   └── ProfileSelector.tsx     # Transmission profile selection
 ├── utils/
-│   └── quietInit.ts           # Quiet.js initialization utilities
+│   ├── quietInit.ts           # Quiet.js initialization utilities
+│   └── logger.ts              # Logging utilities
 ├── types.ts                   # TypeScript type definitions
 ├── App.tsx                    # Main application component
-└── main.tsx                   # Application entry point
+├── App.css                    # Main application styles
+├── main.tsx                   # Application entry point
+└── index.css                  # Global styles
 ```
 
 ## 🔧 Configuration
@@ -275,8 +276,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/your-username/ultrasound-payments/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/ultrasound-payments/discussions)
+- **Issues**: [GitHub Issues](https://github.com/IFAKA/ultrasound-payments/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/IFAKA/ultrasound-payments/discussions)
 - **Documentation**: [Quiet.js Docs](https://quiet.github.io/quiet-js/docs/)
 
 ---

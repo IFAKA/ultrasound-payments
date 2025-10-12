@@ -5,8 +5,11 @@ graph LR
     
     subgraph "Interface Layer"
         Payment["PaymentInterface.tsx<br/>💳 Payment System<br/>• POS Terminal<br/>• Customer Interface<br/>• Payment Flow"]
+        PaymentCSS["PaymentInterface.css<br/>Payment Styles"]
         Chat["ChatInterface.tsx<br/>💬 Audio Chat<br/>• Message History<br/>• Real-time Chat<br/>• Audio Visualization"]
+        ChatCSS["ChatInterface.css<br/>Chat Styles"]
         Text["TextInterface.tsx<br/>📝 Text Transfer<br/>• Text Transmission<br/>• History Tracking<br/>• Bidirectional Transfer"]
+        TextCSS["TextInterface.css<br/>Text Styles"]
     end
     
     subgraph "Shared Components"
@@ -16,16 +19,22 @@ graph LR
     subgraph "Audio System"
         AudioMonitor["Audio Monitor<br/>• Frequency Display<br/>• Audio Level<br/>• FPS Counter<br/>• Microphone Visualizer"]
         QuietInit["Quiet.js Utils<br/>• Library Initialization<br/>• Error Handling<br/>• Ready State"]
+        Logger["Logger Utils<br/>• Logging Utilities<br/>• Debug Support"]
     end
     
     subgraph "Types & Utils"
         Types["types.ts<br/>• ProfileType<br/>• StateType<br/>• PaymentRequest<br/>• Message<br/>• TransmissionRecord"]
+        AppCSS["App.css<br/>Main App Styles"]
+        IndexCSS["index.css<br/>Global Styles"]
     end
     
     %% App to Interfaces
     App --> Payment
     App --> Chat
     App --> Text
+    Payment --> PaymentCSS
+    Chat --> ChatCSS
+    Text --> TextCSS
     
     %% Shared Components
     App --> ProfileSelector
@@ -41,12 +50,17 @@ graph LR
     Payment --> QuietInit
     Chat --> QuietInit
     Text --> QuietInit
+    Payment --> Logger
+    Chat --> Logger
+    Text --> Logger
     
     %% Types Usage
     Payment --> Types
     Chat --> Types
     Text --> Types
     ProfileSelector --> Types
+    App --> AppCSS
+    App --> IndexCSS
     
     %% Styling
     classDef app fill:#2a2a2a,stroke:#4a9eff,stroke-width:3px,color:#fff
@@ -56,7 +70,7 @@ graph LR
     classDef types fill:#2a2a1a,stroke:#ff9800,stroke-width:2px,color:#fff
     
     class App app
-    class Payment,Chat,Text interface
+    class Payment,Chat,Text,PaymentCSS,ChatCSS,TextCSS interface
     class ProfileSelector shared
-    class AudioMonitor,QuietInit audio
-    class Types types
+    class AudioMonitor,QuietInit,Logger audio
+    class Types,AppCSS,IndexCSS types
