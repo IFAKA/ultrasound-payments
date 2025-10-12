@@ -9,14 +9,14 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/quiet-js/(.*)",
-      "dest": "/quiet-js/$1"
+      "source": "/quiet-js/(.*)",
+      "destination": "/quiet-js/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
