@@ -12,7 +12,8 @@ import {
   SidebarMenuButton, 
   SidebarMenuItem, 
   SidebarProvider, 
-  SidebarTrigger 
+  SidebarTrigger,
+  useSidebar 
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -33,7 +34,9 @@ interface AppSidebarProps {
   isMobile: boolean
 }
 
-const AppSidebar = ({ activeTab, onTabChange, profile, onProfileChange, isMobile }: AppSidebarProps) => {
+const AppSidebarContent = ({ activeTab, onTabChange, profile, onProfileChange, isMobile }: AppSidebarProps) => {
+  const { setOpenMobile } = useSidebar()
+  
   const menuItems = [
     {
       id: 'payment' as TabType,
@@ -54,6 +57,14 @@ const AppSidebar = ({ activeTab, onTabChange, profile, onProfileChange, isMobile
       emoji: '📝'
     }
   ]
+
+  const handleTabChange = (tab: TabType) => {
+    onTabChange(tab)
+    // Close mobile sidebar when a tab is selected
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
 
   return (
     <Sidebar variant="inset" className="border-r border-border">
@@ -90,7 +101,7 @@ const AppSidebar = ({ activeTab, onTabChange, profile, onProfileChange, isMobile
                     <Button
                       variant={activeTab === item.id ? "default" : "ghost"}
                       className="w-full justify-start"
-                      onClick={() => onTabChange(item.id)}
+                      onClick={() => handleTabChange(item.id)}
                     >
                       <span className="mr-2">{item.emoji}</span>
                       {item.label}
@@ -122,4 +133,4 @@ const AppSidebar = ({ activeTab, onTabChange, profile, onProfileChange, isMobile
   )
 }
 
-export default AppSidebar
+export default AppSidebarContent
