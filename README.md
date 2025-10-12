@@ -1,4 +1,4 @@
-# 🔊 Ultrasound Communication Demo
+# Ultrasound Demo
 
 A modern React application demonstrating ultrasound data transmission using [Quiet.js](https://github.com/quiet/quiet-js). This project showcases how data can be transmitted through sound waves, including payment systems, chat, and text transfer.
 
