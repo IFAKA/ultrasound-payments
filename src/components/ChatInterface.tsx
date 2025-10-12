@@ -338,7 +338,7 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-4 h-[calc(100vh-200px)] flex flex-col">
+    <div className="h-[calc(100vh-200px)] flex flex-col">
       {/* Profile Selector - Mobile */}
       {isMobile && (
         <div className="mb-3 flex justify-center w-full">

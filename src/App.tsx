@@ -32,10 +32,12 @@ function App() {
         {isMobile && <MobileHeader activeTab={activeTab} />}
         
         {/* Main Content */}
-        <main className="flex-1 p-4 overflow-y-auto">
-          {activeTab === 'payment' && <PaymentInterface profile={profile} onProfileChange={setProfile} />}
-          {activeTab === 'chat' && <ChatInterface profile={profile} onProfileChange={setProfile} />}
-          {activeTab === 'text' && <TextInterface profile={profile} onProfileChange={setProfile} />}
+        <main className="flex-1 overflow-y-auto">
+          <div className="max-w-7xl mx-auto p-4">
+            {activeTab === 'payment' && <PaymentInterface profile={profile} onProfileChange={setProfile} />}
+            {activeTab === 'chat' && <ChatInterface profile={profile} onProfileChange={setProfile} />}
+            {activeTab === 'text' && <TextInterface profile={profile} onProfileChange={setProfile} />}
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>

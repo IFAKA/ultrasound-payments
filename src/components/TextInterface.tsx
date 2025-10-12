@@ -339,7 +339,7 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
+    <div>
       {/* Profile Selector - Mobile */}
       {isMobile && (
         <div className="mb-3 flex justify-center w-full">

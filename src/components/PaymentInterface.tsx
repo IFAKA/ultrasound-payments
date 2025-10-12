@@ -803,7 +803,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
 
 
   return (
-    <div className="w-full max-w-full p-2 box-border flex flex-col h-full overflow-y-auto overflow-x-hidden">
+    <>
       {/* Profile Selector - Mobile */}
       {isMobile && (
         <div className="mb-3 flex justify-center w-full">
@@ -840,9 +840,9 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
         </CardContent>
       </Card>
 
-      <div className="flex flex-col md:flex-row gap-3 items-stretch w-full flex-1 min-h-0 max-w-full overflow-x-hidden">
+      <div className="flex flex-col md:flex-row gap-3 md:justify-center md:items-start w-full flex-1 min-h-0 max-w-full overflow-x-hidden">
         {/* Merchant/POS Interface */}
-        <Card className={`flex-1 min-h-0 md:min-h-[300px] transition-all duration-200 ease-in-out flex flex-col ${
+        <Card className={`flex-1 min-h-0 h-[calc(50vh-100px)] md:h-[calc(100vh-200px)] md:aspect-[9/16] transition-all duration-200 ease-in-out flex flex-col ${
           !merchantEnabled ? 'opacity-50 grayscale-[0.3]' : ''
         } ${
           merchantTransmitting ? 'animate-pulse-glow' : ''
@@ -918,7 +918,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
         </Card>
 
         {/* Customer Interface */}
-        <Card className={`flex-1 min-h-0 md:min-h-[300px] transition-all duration-200 ease-in-out flex flex-col ${
+        <Card className={`flex-1 min-h-0 h-[calc(50vh-100px)] md:h-[calc(100vh-200px)] md:aspect-[9/16] transition-all duration-200 ease-in-out flex flex-col ${
           !customerEnabled ? 'opacity-50 grayscale-[0.3]' : ''
         } ${
           customerTransmitting ? 'animate-pulse-glow-green' : ''
@@ -1018,7 +1018,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
           </Card>
         </div>
       )}
-    </div>
+    </>
   )
 }
 
