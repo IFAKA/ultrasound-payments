@@ -362,10 +362,10 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
               setShowMerchantRetry(false)
               setWaitingForAuthorization(false)
               
-              // Auto-reset after 3 seconds
+              // Auto-reset after 5 seconds
               setTimeout(() => {
                 resetPaymentSystem()
-              }, 3000)
+              }, 5000)
               
               // Send confirmation
               try {
@@ -803,7 +803,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
 
 
   return (
-    <>
+    <div className="h-full flex flex-col">
       {/* Profile Selector - Mobile */}
       {isMobile && (
         <div className="mb-3 flex justify-center w-full">
@@ -816,6 +816,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
         </div>
       )}
 
+      {/* PaymentInterface microphone + freq + audio + fps row */}
       <Card className="mb-3">
         <CardContent className="p-2">
           <div className="flex items-center justify-between flex-wrap gap-1">
@@ -840,9 +841,9 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
         </CardContent>
       </Card>
 
-      <div className="flex flex-col md:flex-row gap-3 md:justify-center md:items-start w-full flex-1 min-h-0 max-w-full overflow-x-hidden">
+      <div className="flex flex-col lg:flex-row gap-3 lg:justify-center lg:items-start w-full flex-1 min-h-0 max-w-full overflow-x-hidden">
         {/* Merchant/POS Interface */}
-        <Card className={`flex-1 min-h-0 h-[calc(50vh-100px)] md:h-[calc(100vh-200px)] md:aspect-[9/16] transition-all duration-200 ease-in-out flex flex-col ${
+        <Card className={`flex-1 min-h-0 h-[calc(50vh-100px)] lg:h-[calc(100vh-200px)] lg:aspect-[9/16] transition-all duration-200 ease-in-out flex flex-col ${
           !merchantEnabled ? 'opacity-50 grayscale-[0.3]' : ''
         } ${
           merchantTransmitting ? 'animate-pulse-glow' : ''
@@ -918,7 +919,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
         </Card>
 
         {/* Customer Interface */}
-        <Card className={`flex-1 min-h-0 h-[calc(50vh-100px)] md:h-[calc(100vh-200px)] md:aspect-[9/16] transition-all duration-200 ease-in-out flex flex-col ${
+        <Card className={`flex-1 min-h-0 h-[calc(50vh-100px)] lg:h-[calc(100vh-200px)] lg:aspect-[9/16] transition-all duration-200 ease-in-out flex flex-col ${
           !customerEnabled ? 'opacity-50 grayscale-[0.3]' : ''
         } ${
           customerTransmitting ? 'animate-pulse-glow-green' : ''
@@ -1018,7 +1019,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
           </Card>
         </div>
       )}
-    </>
+    </div>
   )
 }
 

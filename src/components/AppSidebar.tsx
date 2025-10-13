@@ -11,20 +11,18 @@ import {
   SidebarMenu, 
   SidebarMenuButton, 
   SidebarMenuItem, 
-  SidebarProvider, 
-  SidebarTrigger,
   useSidebar 
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { 
   CreditCard, 
   MessageSquare, 
   FileText, 
+  FolderOpen,
   Github 
 } from 'lucide-react'
 
-type TabType = 'payment' | 'chat' | 'text'
+type TabType = 'payment' | 'chat' | 'text' | 'file'
 
 interface AppSidebarProps {
   activeTab: TabType
@@ -55,6 +53,12 @@ const AppSidebarContent = ({ activeTab, onTabChange, profile, onProfileChange, i
       label: 'Text Transfer',
       icon: FileText,
       emoji: '📝'
+    },
+    {
+      id: 'file' as TabType,
+      label: 'File Transfer',
+      icon: FolderOpen,
+      emoji: '📁'
     }
   ]
 

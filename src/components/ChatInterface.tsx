@@ -8,6 +8,7 @@ import LoadingOverlay from './LoadingOverlay'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
+import { CheckCircle, AlertCircle, Clock, RotateCcw } from 'lucide-react'
 
 interface ChatInterfaceProps {
   profile: ProfileType
@@ -42,13 +43,31 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
 
     for (const line of lines) {
       if (line.trim()) {
-        setMessages(prev => [...prev, {
+        // Check if this is a delivery confirmation
+        if (line.startsWith('DELIVERY_CONFIRM:')) {
+          const messageId = line.replace('DELIVERY_CONFIRM:', '')
+          setMessages(prev => prev.map(msg => 
+            msg.id === messageId 
+              ? { ...msg, status: 'delivered' }
+              : msg
+          ))
+          return
+        }
+
+        // Regular message
+        const newMessage: Message = {
           id: (Date.now() + Math.random()).toString(),
           text: line.trim(),
           type: 'received',
           timestamp: Date.now(),
-          sender: 'received'
-        }])
+          sender: 'received',
+          status: 'delivered'
+        }
+        
+        setMessages(prev => [...prev, newMessage])
+        
+        // Send delivery confirmation
+        sendData(`DELIVERY_CONFIRM:${newMessage.id}`)
       }
     }
   }
@@ -58,18 +77,59 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
     if (!newMessage.trim()) return
     
     const message = newMessage.trim()
+    const messageId = (Date.now() + Math.random()).toString()
     setNewMessage('')
     
-    // Add sent message to chat
-    setMessages(prev => [...prev, {
-      id: (Date.now() + Math.random()).toString(),
+    // Add sent message to chat with sending status
+    const newMessageObj: Message = {
+      id: messageId,
       text: message,
       type: 'sent',
       timestamp: Date.now(),
-      sender: 'user'
-    }])
+      sender: 'user',
+      status: 'sending',
+      retryCount: 0
+    }
     
-    sendData(message)
+    setMessages(prev => [...prev, newMessageObj])
+    
+    // Send message with retry logic
+    sendMessageWithRetry(messageId, message, 0)
+  }
+
+  // Send message with retry logic
+  const sendMessageWithRetry = (messageId: string, message: string, retryCount: number) => {
+    const success = sendData(message, () => {
+      // Update status to sent
+      setMessages(prev => prev.map(msg => 
+        msg.id === messageId 
+          ? { ...msg, status: 'sent' }
+          : msg
+      ))
+    })
+
+    if (!success) {
+      // Mark as failed and allow retry
+      setMessages(prev => prev.map(msg => 
+        msg.id === messageId 
+          ? { ...msg, status: 'failed', retryCount }
+          : msg
+      ))
+    }
+  }
+
+  // Retry failed message
+  const retryMessage = (messageId: string) => {
+    const message = messages.find(msg => msg.id === messageId)
+    if (!message) return
+
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId 
+        ? { ...msg, status: 'sending', retryCount: (msg.retryCount || 0) + 1 }
+        : msg
+    ))
+
+    sendMessageWithRetry(messageId, message.text, (message.retryCount || 0) + 1)
   }
 
   // Helper functions
@@ -91,6 +151,22 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
     return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
+  // Get status icon for message
+  const getStatusIcon = (status?: string) => {
+    switch (status) {
+      case 'sending':
+        return <Clock className="w-3 h-3 text-yellow-500" />
+      case 'sent':
+        return <CheckCircle className="w-3 h-3 text-blue-500" />
+      case 'delivered':
+        return <CheckCircle className="w-3 h-3 text-green-500" />
+      case 'failed':
+        return <AlertCircle className="w-3 h-3 text-red-500" />
+      default:
+        return null
+    }
+  }
+
   // Start receiver when ready
   useEffect(() => {
     if (isReady) {
@@ -104,7 +180,7 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
   }, [messages])
 
   return (
-    <div className="h-[calc(100vh-200px)] flex flex-col">
+    <div className="flex flex-col">
       {/* Profile Selector - Mobile */}
       {isMobile && (
         <div className="mb-3 flex justify-center w-full">
@@ -144,10 +220,27 @@ const ChatInterface = ({ profile, onProfileChange }: ChatInterfaceProps) => {
                 }`}>
                   {message.text}
                 </div>
-                <div className={`text-xs text-muted-foreground mt-1 px-2 ${
-                  message.type === 'sent' ? 'text-right' : 'text-left'
+                <div className={`flex items-center gap-1 mt-1 px-2 ${
+                  message.type === 'sent' ? 'justify-end' : 'justify-start'
                 }`}>
-                  {formatTime(message.timestamp)}
+                  <div className="text-xs text-muted-foreground">
+                    {formatTime(message.timestamp)}
+                  </div>
+                  {message.type === 'sent' && (
+                    <div className="flex items-center gap-1">
+                      {getStatusIcon(message.status)}
+                      {message.status === 'failed' && (
+                        <Button
+                          onClick={() => retryMessage(message.id)}
+                          variant="ghost"
+                          size="sm"
+                          className="h-4 w-4 p-0 hover:bg-red-100"
+                        >
+                          <RotateCcw className="w-3 h-3 text-red-500" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             ))

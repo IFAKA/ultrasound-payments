@@ -18,7 +18,6 @@ export const useUltrasound = ({ profile, logger }: UseUltrasoundOptions) => {
   const [isReceiving, setIsReceiving] = useState<boolean>(false)
   const [audioLevel, setAudioLevel] = useState<number>(0)
   const [detectedFreq, setDetectedFreq] = useState<string>('—')
-  const [fps, setFps] = useState<string>('—')
   const isMobile = useIsMobile()
   const [sessionId] = useState<string>(() => Math.random().toString(36).slice(2, 10))
 
@@ -32,6 +31,7 @@ export const useUltrasound = ({ profile, logger }: UseUltrasoundOptions) => {
   // Ultrasound refs
   const receiverRef = useRef<any>(null)
   const transmitterRef = useRef<any>(null)
+  const receiveBufferRef = useRef<string>('')
 
   // Initialize Quiet.js
   useEffect(() => {
@@ -83,7 +83,8 @@ export const useUltrasound = ({ profile, logger }: UseUltrasoundOptions) => {
   const updateMicVisualizer = useCallback(() => {
     if (!analyserRef.current || !dataArrayRef.current || !micVizRef.current) return
 
-    analyserRef.current.getByteFrequencyData(dataArrayRef.current)
+    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount)
+    analyserRef.current.getByteFrequencyData(dataArray)
     
     const canvas = micVizRef.current
     const ctx = canvas.getContext('2d')
@@ -94,18 +95,18 @@ export const useUltrasound = ({ profile, logger }: UseUltrasoundOptions) => {
     
     ctx.clearRect(0, 0, width, height)
     
-    const barWidth = width / dataArrayRef.current.length
+    const barWidth = width / dataArray.length
     let maxFreq = 0
     let maxIndex = 0
     
-    for (let i = 0; i < dataArrayRef.current.length; i++) {
-      const barHeight = (dataArrayRef.current[i] / 255) * height
+    for (let i = 0; i < dataArray.length; i++) {
+      const barHeight = (dataArray[i] / 255) * height
       const x = i * barWidth
       
       // Calculate frequency (rough approximation)
-      const freq = (i * audioCtxRef.current!.sampleRate) / (2 * dataArrayRef.current.length)
-      if (dataArrayRef.current[i] > maxFreq) {
-        maxFreq = dataArrayRef.current[i]
+      const freq = (i * audioCtxRef.current!.sampleRate) / (2 * dataArray.length)
+      if (dataArray[i] > maxFreq) {
+        maxFreq = dataArray[i]
         maxIndex = i
       }
       
@@ -119,11 +120,11 @@ export const useUltrasound = ({ profile, logger }: UseUltrasoundOptions) => {
     }
     
     // Update audio level and detected frequency
-    const avgLevel = dataArrayRef.current.reduce((a, b) => a + b, 0) / dataArrayRef.current.length
+    const avgLevel = dataArray.reduce((a, b) => a + b, 0) / dataArray.length
     setAudioLevel(Math.round((avgLevel / 255) * 100))
     
     if (maxFreq > 10) {
-      const detectedFreq = Math.round((maxIndex * audioCtxRef.current!.sampleRate) / (2 * dataArrayRef.current.length))
+      const detectedFreq = Math.round((maxIndex * audioCtxRef.current!.sampleRate) / (2 * dataArray.length))
       setDetectedFreq(detectedFreq.toString())
     } else {
       setDetectedFreq('—')
@@ -137,14 +138,37 @@ export const useUltrasound = ({ profile, logger }: UseUltrasoundOptions) => {
     if (!isReady || receiverRef.current) return
 
     try {
+      // Ensure audio context is resumed
+      if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+        console.log('FileTransfer: Resuming audio context for receiver')
+        audioCtxRef.current.resume()
+      }
+      
       receiverRef.current = window.Quiet.receiver({
         profile,
         onReceive: (payload: ArrayBuffer) => {
-          const text = window.Quiet.ab2str(payload)
-          onReceive(text)
+          const text = window.Quiet.ab2str(payload) || ''
+          console.log('FileTransfer: Raw received data:', text.substring(0, 100) + (text.length > 100 ? '...' : ''))
+          receiveBufferRef.current += text
+          
+          // Process complete lines
+          const lines = receiveBufferRef.current.split('\n')
+          receiveBufferRef.current = lines.pop() || '' // Keep incomplete line in buffer
+          
+          // Process each complete line
+          lines.forEach(line => {
+            const trimmedLine = line.trim()
+            if (trimmedLine) {
+              console.log('FileTransfer: Processing received line:', trimmedLine.substring(0, 50) + '...')
+              console.log('FileTransfer: Full received line:', trimmedLine)
+              onReceive(trimmedLine)
+            }
+          })
         }
       })
       setIsReceiving(true)
+      console.log('FileTransfer: Receiver started successfully')
+      console.log('FileTransfer: Audio context state:', audioCtxRef.current?.state)
     } catch (error) {
       logger.error('Failed to start receiver', error)
     }
@@ -167,11 +191,20 @@ export const useUltrasound = ({ profile, logger }: UseUltrasoundOptions) => {
         onFinish: () => {
           logger.success('Transmission completed')
           setIsTransmitting(false)
+          
+          // Ensure audio context is resumed after transmission
+          if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+            console.log('FileTransfer: Resuming audio context after transmission')
+            audioCtxRef.current.resume()
+          }
+          
           onFinish?.()
         }
       })
       
       logger.tx(data)
+      console.log('FileTransfer: Transmitting data:', data.substring(0, 100) + (data.length > 100 ? '...' : ''))
+      console.log('FileTransfer: Audio context state before transmit:', audioCtxRef.current?.state)
       transmitterRef.current.transmit(payload)
       return true
     } catch (error) {
@@ -199,6 +232,7 @@ export const useUltrasound = ({ profile, logger }: UseUltrasoundOptions) => {
       audioCtxRef.current.close()
       audioCtxRef.current = null
     }
+    receiveBufferRef.current = ''
     setIsReceiving(false)
   }, [])
 
@@ -209,7 +243,6 @@ export const useUltrasound = ({ profile, logger }: UseUltrasoundOptions) => {
     isReceiving,
     audioLevel,
     detectedFreq,
-    fps,
     isMobile,
     sessionId,
     

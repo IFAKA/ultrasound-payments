@@ -86,9 +86,9 @@ export default {
   			]
   		},
   		animation: {
-  			'pulse-glow': 'pulseGlow 1.5s ease-in-out infinite',
-  			'pulse-glow-green': 'pulseGlowGreen 1.5s ease-in-out infinite',
-  			'success-bounce': 'successBounce 0.3s ease-out',
+			'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+			'pulse-glow-green': 'pulseGlowGreen 3s ease-in-out infinite',
+  			'success-bounce': 'successBounce 1.5s ease-out',
   			'message-slide': 'messageSlide 0.3s ease-out',
   			'history-slide': 'historySlide 0.3s ease-out'
   		},
@@ -121,17 +121,28 @@ export default {
   					borderColor: 'rgba(52, 211, 153, 0.8)'
   				}
   			},
-  			successBounce: {
-  				'0%': {
-  					transform: 'scale(1)'
-  				},
-  				'50%': {
-  					transform: 'scale(1.02)'
-  				},
-  				'100%': {
-  					transform: 'scale(1)'
-  				}
-  			},
+			successBounce: {
+				'0%': {
+					transform: 'scale(1)',
+					boxShadow: '0 0 0 rgba(16, 185, 129, 0)'
+				},
+				'25%': {
+					transform: 'scale(1.05)',
+					boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)'
+				},
+				'50%': {
+					transform: 'scale(1.02)',
+					boxShadow: '0 0 30px rgba(16, 185, 129, 0.6)'
+				},
+				'75%': {
+					transform: 'scale(1.01)',
+					boxShadow: '0 0 15px rgba(16, 185, 129, 0.3)'
+				},
+				'100%': {
+					transform: 'scale(1)',
+					boxShadow: '0 0 0 rgba(16, 185, 129, 0)'
+				}
+			},
   			messageSlide: {
   				from: {
   					opacity: '0',

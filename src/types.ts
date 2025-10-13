@@ -25,6 +25,8 @@ export interface Message {
   timestamp: number
   sender: 'user' | 'received'
   type?: string
+  status?: 'sending' | 'sent' | 'delivered' | 'failed'
+  retryCount?: number
 }
 
 export interface TransmissionRecord {

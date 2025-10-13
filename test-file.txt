@@ -1,0 +1,17 @@
+Hello! This is a test file for ultrasound file transfer.
+
+Features:
+- Send files between devices via ultrasound
+- Real-time progress tracking
+- File type support (any file type)
+- Download received files
+- Transfer history
+
+Instructions:
+1. Open the app on two devices (phone + laptop)
+2. Both devices: Go to File Transfer tab
+3. Device A: Choose this file and click "Send File"
+4. Device B: Wait for the file to appear in Transfer History
+5. Device B: Click "Download" to save the file
+
+The file transfer uses ultrasound frequencies to send data through sound waves!

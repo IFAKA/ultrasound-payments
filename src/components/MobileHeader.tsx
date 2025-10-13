@@ -1,13 +1,12 @@
-import { ProfileType } from '../types'
 import { SidebarTrigger } from '@/components/ui/sidebar'
-import { Button } from '@/components/ui/button'
 import { 
   CreditCard, 
   MessageSquare, 
-  FileText 
+  FileText,
+  FolderOpen
 } from 'lucide-react'
 
-type TabType = 'payment' | 'chat' | 'text'
+type TabType = 'payment' | 'chat' | 'text' | 'file'
 
 interface MobileHeaderProps {
   activeTab: TabType
@@ -22,6 +21,8 @@ const MobileHeader = ({ activeTab }: MobileHeaderProps) => {
         return { emoji: '💬', label: 'Audio Chat', icon: MessageSquare }
       case 'text':
         return { emoji: '📝', label: 'Text Transfer', icon: FileText }
+      case 'file':
+        return { emoji: '📁', label: 'File Transfer', icon: FolderOpen }
     }
   }
 
@@ -29,7 +30,7 @@ const MobileHeader = ({ activeTab }: MobileHeaderProps) => {
 
   return (
     <header className="flex items-center justify-between px-4 py-2 border-b border-border bg-background">
-      <SidebarTrigger className="md:hidden" />
+      <SidebarTrigger className="lg:hidden" />
       <h1 className="text-lg font-semibold text-center flex-1 flex items-center justify-center gap-2">
         <span>{tabInfo.emoji}</span>
         {tabInfo.label}

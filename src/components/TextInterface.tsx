@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { ProfileType, TransmissionRecord } from '../types'
-import { initializeQuiet, isQuietReady } from '../utils/quietInit'
+import { initializeQuiet } from '../utils/quietInit'
 import { textLogger, audioLogger } from '../utils/logger'
 import ProfileSelector from './ProfileSelector'
 import { Button } from '@/components/ui/button'
@@ -18,12 +18,10 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
   const [textToSend, setTextToSend] = useState<string>('')
   const [receivedText, setReceivedText] = useState<string>('')
   const [isTransmitting, setIsTransmitting] = useState<boolean>(false)
-  const [isReceiving, setIsReceiving] = useState<boolean>(false)
   const [transmissionHistory, setTransmissionHistory] = useState<TransmissionRecord[]>([])
   const [audioLevel, setAudioLevel] = useState<number>(0)
   const [detectedFreq, setDetectedFreq] = useState<string>('—')
   const [isMobile, setIsMobile] = useState<boolean>(false)
-  const [sessionId] = useState<string>(() => Math.random().toString(36).slice(2, 10))
 
   const receiverRef = useRef<any>(null)
   const transmitterRef = useRef<any>(null)
@@ -66,16 +64,6 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
     }
   }, [])
 
-  // Load script helper
-  const loadScript = (src) => {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script')
-      script.src = src
-      script.onload = resolve
-      script.onerror = reject
-      document.head.appendChild(script)
-    })
-  }
 
   // Initialize microphone visualizer
   const initMicVisualizer = async () => {
@@ -104,6 +92,7 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
       const canvas = micVizRef.current
       if (canvas) {
         const ctx = canvas.getContext('2d')
+        if (!ctx) return
         const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1))
         
         const resize = () => {
@@ -210,14 +199,12 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
     }
 
     try {
-      setIsReceiving(true)
-      
       receiverRef.current = window.Quiet.receiver({
         profile,
-        onReceive: (payload) => {
+        onReceive: (payload: ArrayBuffer) => {
           textBufRef.current += window.Quiet.ab2str(payload)
           const lines = textBufRef.current.split('\n')
-          textBufRef.current = lines.pop()
+          textBufRef.current = lines.pop() || ''
           
           lines.forEach(line => {
             const text = line.trim()
@@ -230,23 +217,21 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
             
             // Add to transmission history
             setTransmissionHistory(prev => [...prev, {
-              id: Date.now() + Math.random(),
+              id: (Date.now() + Math.random()).toString(),
               text,
-              type: 'received',
-              timestamp: new Date()
+              timestamp: Date.now(),
+              direction: 'received' as const
             }])
           })
         },
         onCreate: () => textLogger.success('Receiver created successfully'),
-        onCreateFail: (r) => {
+        onCreateFail: (r: any) => {
           textLogger.error('Receiver creation failed', r)
-          setIsReceiving(false)
         },
-        onReceiveFail: (e) => textLogger.error('Receive error', e)
+        onReceiveFail: (e: any) => textLogger.error('Receive error', e)
       })
     } catch (e) {
       textLogger.error('Receiver error', e)
-      setIsReceiving(false)
     }
   }
 
@@ -259,10 +244,10 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
     
     // Add to transmission history
     setTransmissionHistory(prev => [...prev, {
-      id: Date.now() + Math.random(),
+      id: (Date.now() + Math.random()).toString(),
       text,
-      type: 'sent',
-      timestamp: new Date()
+      timestamp: Date.now(),
+      direction: 'sent' as const
     }])
     
     try {
@@ -288,7 +273,7 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
   }
 
   // Helper functions
-  const seen = (msg) => {
+  const seen = (msg: string) => {
     const now = Date.now()
     const time = recentMessagesRef.current.get(msg)
     if (time && now - time < 600) return true
@@ -329,8 +314,8 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
   }, [isReady, profile])
 
 
-  const formatTime = (date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const formatTime = (timestamp: number) => {
+    return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
   const clearHistory = () => {
@@ -339,7 +324,7 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
   }
 
   return (
-    <div>
+    <div className="h-full flex flex-col">
       {/* Profile Selector - Mobile */}
       {isMobile && (
         <div className="mb-3 flex justify-center w-full">
@@ -374,7 +359,7 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
       </Card>
 
       <div className="flex flex-col gap-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Send Section */}
           <Card className="border-l-4 border-l-blue-400">
             <CardHeader>
@@ -445,7 +430,7 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
               ) : (
                 transmissionHistory.map((item) => (
                   <Card key={item.id} className={`animate-history-slide ${
-                    item.type === 'sent' ? 'border-l-4 border-l-blue-400' : 'border-l-4 border-l-green-400'
+                    item.direction === 'sent' ? 'border-l-4 border-l-blue-400' : 'border-l-4 border-l-green-400'
                   }`}>
                     <CardContent className="p-4">
                       <div className="text-sm leading-relaxed mb-2 break-words">
@@ -453,7 +438,7 @@ const TextInterface = ({ profile, onProfileChange }: TextInterfaceProps) => {
                       </div>
                       <div className="flex justify-between items-center text-xs text-muted-foreground">
                         <span className="font-semibold">
-                          {item.type === 'sent' ? '📤 Sent' : '📥 Received'}
+                          {item.direction === 'sent' ? '📤 Sent' : '📥 Received'}
                         </span>
                         <span className="font-mono">
                           {formatTime(item.timestamp)}
