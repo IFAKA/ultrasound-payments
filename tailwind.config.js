@@ -86,41 +86,41 @@ export default {
   			]
   		},
   		animation: {
-  			'pulse-glow': 'pulseGlow 1.5s ease-in-out infinite',
-  			'pulse-glow-green': 'pulseGlowGreen 1.5s ease-in-out infinite',
-  			'success-bounce': 'successBounce 0.3s ease-out',
+			'pulse-glow': 'pulseGlow 40s linear infinite',
+			'pulse-glow-green': 'pulseGlowGreen 40s linear infinite',
+			'success-bounce': 'successBounce 1.5s ease-out',
   			'message-slide': 'messageSlide 0.3s ease-out',
   			'history-slide': 'historySlide 0.3s ease-out'
   		},
   		keyframes: {
-  			pulseGlow: {
-  				'0%': {
-  					boxShadow: '0 0 5px rgba(138, 180, 248, 0.3), 0 0 10px rgba(138, 180, 248, 0.2), 0 0 15px rgba(138, 180, 248, 0.1)',
-  					borderColor: 'rgba(138, 180, 248, 0.8)'
-  				},
-  				'50%': {
-  					boxShadow: '0 0 20px rgba(138, 180, 248, 0.6), 0 0 30px rgba(138, 180, 248, 0.4), 0 0 40px rgba(138, 180, 248, 0.2)',
-  					borderColor: 'rgba(138, 180, 248, 1)'
-  				},
-  				'100%': {
-  					boxShadow: '0 0 5px rgba(138, 180, 248, 0.3), 0 0 10px rgba(138, 180, 248, 0.2), 0 0 15px rgba(138, 180, 248, 0.1)',
-  					borderColor: 'rgba(138, 180, 248, 0.8)'
-  				}
-  			},
-  			pulseGlowGreen: {
-  				'0%': {
-  					boxShadow: '0 0 5px rgba(52, 211, 153, 0.3), 0 0 10px rgba(52, 211, 153, 0.2), 0 0 15px rgba(52, 211, 153, 0.1)',
-  					borderColor: 'rgba(52, 211, 153, 0.8)'
-  				},
-  				'50%': {
-  					boxShadow: '0 0 20px rgba(52, 211, 153, 0.6), 0 0 30px rgba(52, 211, 153, 0.4), 0 0 40px rgba(52, 211, 153, 0.2)',
-  					borderColor: 'rgba(52, 211, 153, 1)'
-  				},
-  				'100%': {
-  					boxShadow: '0 0 5px rgba(52, 211, 153, 0.3), 0 0 10px rgba(52, 211, 153, 0.2), 0 0 15px rgba(52, 211, 153, 0.1)',
-  					borderColor: 'rgba(52, 211, 153, 0.8)'
-  				}
-  			},
+			pulseGlow: {
+				'0%': {
+					boxShadow: '0 0 2px rgba(138, 180, 248, 0.08)',
+					borderColor: 'rgba(138, 180, 248, 0.40)'
+				},
+				'50%': {
+					boxShadow: '0 0 2px rgba(138, 180, 248, 0.08)',
+					borderColor: 'rgba(138, 180, 248, 0.55)'
+				},
+				'100%': {
+					boxShadow: '0 0 2px rgba(138, 180, 248, 0.08)',
+					borderColor: 'rgba(138, 180, 248, 0.40)'
+				}
+			},
+			pulseGlowGreen: {
+				'0%': {
+					boxShadow: '0 0 2px rgba(52, 211, 153, 0.08)',
+					borderColor: 'rgba(52, 211, 153, 0.40)'
+				},
+				'50%': {
+					boxShadow: '0 0 2px rgba(52, 211, 153, 0.08)',
+					borderColor: 'rgba(52, 211, 153, 0.55)'
+				},
+				'100%': {
+					boxShadow: '0 0 2px rgba(52, 211, 153, 0.08)',
+					borderColor: 'rgba(52, 211, 153, 0.40)'
+				}
+			},
   			successBounce: {
   				'0%': {
   					transform: 'scale(1)'

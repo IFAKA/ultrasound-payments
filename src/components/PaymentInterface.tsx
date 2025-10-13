@@ -845,7 +845,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
         <Card className={`flex-1 min-h-0 h-[calc(50vh-100px)] md:h-[calc(100vh-200px)] md:aspect-[9/16] transition-all duration-200 ease-in-out flex flex-col ${
           !merchantEnabled ? 'opacity-50 grayscale-[0.3]' : ''
         } ${
-          merchantTransmitting ? 'animate-pulse-glow' : ''
+          merchantTransmitting ? 'ring-2 ring-blue-300/30 shadow-[0_0_8px_rgba(138,180,248,0.35)] transition-shadow duration-500' : ''
         } ${
           showMerchantSuccess ? 'animate-success-bounce' : ''
         }`}>
@@ -921,7 +921,7 @@ const PaymentInterface = ({ profile, onProfileChange }: PaymentInterfaceProps) =
         <Card className={`flex-1 min-h-0 h-[calc(50vh-100px)] md:h-[calc(100vh-200px)] md:aspect-[9/16] transition-all duration-200 ease-in-out flex flex-col ${
           !customerEnabled ? 'opacity-50 grayscale-[0.3]' : ''
         } ${
-          customerTransmitting ? 'animate-pulse-glow-green' : ''
+          customerTransmitting ? 'ring-2 ring-green-300/30 shadow-[0_0_8px_rgba(52,211,153,0.35)] transition-shadow duration-500' : ''
         } ${
           showCustomerSuccess ? 'animate-success-bounce' : ''
         }`}>
